@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import Cam from '../img/cam.png'
 import Add from '../img/add.png'
 import More from '../img/more.png'
@@ -8,6 +8,8 @@ import { ChatContext } from '../context/ChatContext'
 
 const Chat = () => {
   const { data } = useContext(ChatContext)
+
+  const [messagesIsLoading, setMessagesIsLoading] = useState(false)
 
   return (
     <div className='chat'>
@@ -19,8 +21,12 @@ const Chat = () => {
           <img src={More} alt="" />
         </div>
       </div>
-      <Messages/>
+      <Messages 
+      setMessagesIsLoading={setMessagesIsLoading}
+      messagesIsLoading={messagesIsLoading}
+      />
       <Input/>
+      {messagesIsLoading && <div className="messagesIsLoading"></div>}
     </div>
   )
 }

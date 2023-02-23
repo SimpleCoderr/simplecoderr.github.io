@@ -6,6 +6,7 @@ import { AuthContext } from '../context/AuthContext';
 const Search = () => {
   const [username, setUsername] = useState("")
   const [user, setUser] = useState(null)
+  const [editSearch, setEditSearch] = useState(false)
   const [err, setErr] = useState(false)
 
   const { currentUser } = useContext(AuthContext)
@@ -13,6 +14,7 @@ const Search = () => {
   const handleSearch = async () => {
     const q = query(collection(db, "users"),
       where("displayName", "==", username))
+
 
     try {
       const querySnapshot = await getDocs(q);
@@ -22,13 +24,21 @@ const Search = () => {
 
     }
     catch (err) {
+      console.log('set error')
       setErr(true)
     }
 
   }
 
   const handleKey = e => {
-    e.code === "Enter" && handleSearch()
+    setUser(null);
+    handleSearch();
+  }
+
+  const handleChange = e => {
+    setEditSearch(!!e.target.value)
+    console.log(editSearch)
+    setUsername(e.target.value)
   }
 
   const handleSelect = async () => {
@@ -37,7 +47,7 @@ const Search = () => {
     try {
       const res = await getDoc(doc(db, "chats", combineId))
       if (!res.exists()) {
-        
+
         await setDoc(doc(db, "chats", combineId), { messages: [] })
 
         await updateDoc(doc(db, "userChats", currentUser.uid), {
@@ -66,22 +76,24 @@ const Search = () => {
   }
   return (
     <div className='search'>
+      <div className="searchTitle sidebarTitle">Search</div>
       <div className='searchForm'>
         <input type="text"
           placeholder='Find a user'
-          onKeyDown={handleKey}
-          onChange={e => setUsername(e.target.value)}
+          onKeyUp={handleKey}
+          onChange={handleChange}
           value={username}
-          />
+        />
       </div >
-      {err && <span>User not found</span>}
-      {user &&
-        <div className="userChat" onClick={handleSelect}>
+      {user
+        ? <div className="userChat" onClick={handleSelect}>
           <img src={user.photoURL} alt="" />
           <div className='userChatInfo'>
             <span>{user.displayName}</span>
           </div>
-        </div>}
+        </div>
+        : editSearch && <span className='userNotFound'>User not found</span>
+      }
     </div>
   )
 }

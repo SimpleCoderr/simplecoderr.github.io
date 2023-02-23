@@ -3,11 +3,13 @@
         @content;
     }
 }
+
 @mixin tablet {
     @media screen and (max-width:768px) {
         @content;
     }
 }
+
 @mixin laptop {
     @media screen and (max-width:1200px) {
         @content;
@@ -102,14 +104,26 @@
         height: 80%;
         display: flex;
         overflow: hidden;
+
         @include tablet {
-           width: 90%;
+            width: 90%;
         }
 
         .sidebar {
             flex: 1;
+            width: 100%;
             background-color: #3e3c61;
             position: relative;
+
+            .sidebarTitle {
+                font-size: 16px;
+                text-align: center;
+                padding: 10px 0;
+                font-weight: bold;
+                color: #fff;
+                letter-spacing: 2px;
+                text-decoration: underline;
+            }
 
             .navbar {
                 display: flex;
@@ -122,6 +136,7 @@
 
                 .logo {
                     font-weight: bold;
+
                     @include tablet {
                         display: none;
                     }
@@ -130,11 +145,14 @@
                 .user {
                     display: flex;
                     gap: 10px;
+                    align-items: center;
 
                     img {
+                        display: inline-block;
+                        border: 1px solid lightgray;
                         background-color: #ddddf7;
-                        height: 24px;
-                        width: 24px;
+                        height: 30px;
+                        width: 30px;
                         border-radius: 50%;
                         object-fit: cover;
                     }
@@ -142,9 +160,12 @@
                     button {
                         background-color: #5d5b8d;
                         color: #ddddf7;
-                        font-size: 10px;
+                        font-size: 14px;
                         border: none;
                         cursor: pointer;
+                        border-radius: 2px;
+                        padding: 5px 10px;
+
                         @include tablet {
                             position: absolute;
                             bottom: 10px;
@@ -164,6 +185,7 @@
                         border: none;
                         color: white;
                         outline: none;
+                        width: 100%;
 
                         &::placeholder {
                             color: lightgrey;
@@ -172,6 +194,16 @@
                 }
             }
 
+            .userNotFound {
+                display: inline-block;
+                padding: 20px;
+                font-size: 18px;
+                color: #fff;
+                font-weight: 500;
+            }
+            .chats {
+                overflow-y: auto;
+            }
             .userChat {
                 padding: 10px;
                 display: flex;
@@ -198,6 +230,10 @@
                     }
 
                     p {
+                        max-width: 200px;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
                         font-size: 14px;
                         color: lightgrey;
                     }
@@ -207,6 +243,8 @@
 
         .chat {
             flex: 2;
+            overflow: hidden;
+            position: relative;
 
             .chatInfo {
                 height: 50px;
@@ -228,11 +266,24 @@
                 }
             }
 
+            .messagesIsLoading {
+                position: absolute;
+                z-index: 2;
+                left: 0;
+                top: 0;
+                width: 100%;
+                min-height: 100%;
+                backdrop-filter: blur(5px);
+            }
+
             .messages {
+                display: flex;
+                flex-direction: column;
                 background-color: #ddddf7;
                 padding: 10px;
                 height: calc(100% - 160px);
                 overflow-y: auto;
+                position: relative;
 
                 .message {
                     display: flex;
@@ -242,9 +293,11 @@
                     .messageInfo {
                         display: flex;
                         flex-direction: column;
+                        align-items: center;
                         color: grey;
                         font-weight: 300;
                         margin-bottom: 20px;
+                        min-width: max-content;
 
                         img {
                             width: 40px;
@@ -256,12 +309,14 @@
                     }
 
                     .messageContent {
-                        max-width: 80%;
+                        overflow: hidden;
                         display: flex;
                         flex-direction: column;
                         gap: 10px;
 
                         p {
+                            max-width: 80%;
+                            word-wrap: break-word;
                             background-color: #fff;
                             padding: 10px;
                             border-radius: 0px 10px 10px 10px;
@@ -269,6 +324,7 @@
 
                         img {
                             width: 50%;
+                            border-radius: 7px;
                         }
                     }
 
@@ -283,7 +339,6 @@
                                 background-color: #8da4f1;
                                 color: white;
                                 border-radius: 10px 0px 10px 10px;
-                                max-width: max-content;
                             }
                         }
                     }
@@ -297,6 +352,28 @@
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
+
+                position: relative;
+
+                .inputLoadImg {
+                    display: flex;
+                    align-items: center;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    transform: translate(10%, -150%);
+
+                    span {
+                        margin-right: 10px;
+                    }
+
+                    button {
+                        cursor: pointer;
+                        border: none;
+                        background-color: transparent;
+                        font-size: 16px;
+                    }
+                }
 
                 input {
                     width: 100%;
@@ -325,6 +402,13 @@
                         padding: 10px 15px;
                         color: #fff;
                         background-color: #8da4f1;
+                        transition: all .2s;
+
+                        &.available {
+                            background-color: #496feb;
+                            cursor: pointer;
+
+                        }
                     }
                 }
             }

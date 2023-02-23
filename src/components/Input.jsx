@@ -23,16 +23,20 @@ const Input = () => {
 
 
   const handleSend = async () => {
+    const textMessage = text
+    setText("")
+
     if (img) {
       const storageRef = ref(storage, uuid());
 
       await uploadBytesResumable(storageRef, img).then(() => {
         getDownloadURL(storageRef).then(async (downloadURL) => {
+
           try {
             await updateDoc(doc(db, "chats", data.chatId), {
               messages: arrayUnion({
                 id: uuid(),
-                text,
+                text: textMessage,
                 senderId: currentUser.uid,
                 date: Timestamp.now(),
                 img: downloadURL,
@@ -40,6 +44,7 @@ const Input = () => {
             });
           } catch (err) {
           }
+
         });
       });
     }
@@ -47,7 +52,7 @@ const Input = () => {
       await updateDoc(doc(db, "chats", data.chatId), {
         messages: arrayUnion({
           id: uuid(),
-          text,
+          text: textMessage,
           senderId: currentUser.uid,
           date: Timestamp.now(),
         }),
@@ -55,28 +60,34 @@ const Input = () => {
     }
 
     await updateDoc(doc(db, "userChats", currentUser.uid), {
-      [data.chatId + ".lastMessage"] : {
+      [data.chatId + ".lastMessage"]: {
         text
       },
-      [data.chatId+".date"]: serverTimestamp()
+      [data.chatId + ".date"]: serverTimestamp()
     })
     await updateDoc(doc(db, "userChats", data.user.uid), {
-      [data.chatId + ".lastMessage"] : {
+      [data.chatId + ".lastMessage"]: {
         text
       },
-      [data.chatId+".date"]: serverTimestamp()
+      [data.chatId + ".date"]: serverTimestamp()
     })
 
-    setText("");
     setImg(null);
   };
+
   return (
     <div className="input">
+      {img &&
+        <div className="inputLoadImg">
+          <span>{img.name}</span>
+          <button onClick={e => setImg(null)}>☓</button>
+        </div>}
       <input
         type="text"
         placeholder="Type something..."
         onChange={(e) => setText(e.target.value)}
         value={text}
+        onKeyDown={(e) => e.key === 'Enter' && !!text && handleSend()}
       />
       <div className="send">
         <img src={Attach} alt="" />
@@ -89,7 +100,13 @@ const Input = () => {
         <label htmlFor="file">
           <img src={Img} alt="" />
         </label>
-        <button onClick={handleSend}>Send</button>
+        <button
+          className={`${!!text && 'available'}`}
+          onClick={handleSend}
+          disabled={!text}
+        >
+          Send
+        </button>
       </div>
     </div>
   );

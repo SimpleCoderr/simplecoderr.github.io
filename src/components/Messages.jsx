@@ -4,14 +4,16 @@ import { ChatContext } from '../context/ChatContext'
 import { db } from '../firebase'
 import Message from './Message'
 
-const Messages = () => {
+const Messages = ({setMessagesIsLoading, messagesIsLoading}) => {
   const [messages, setMessages] = useState([])
   const { data } = useContext(ChatContext)
   
   useEffect(() => {
+    setMessagesIsLoading(true)
     const unSub = onSnapshot(doc(db, "chats", data.chatId), (doc) => {
       doc.exists() && setMessages(doc.data().messages)
-    }, [data.chatId])
+      setMessagesIsLoading(false)
+    }, [])
 
     return () => {
       unSub()
@@ -20,9 +22,10 @@ const Messages = () => {
 
   return (
     <div className='messages'>
-        {messages.map(m =>(
-          <Message message={m} key={m.id}/>
-        ))}
+      {messages.map(m => (
+        <Message message={m} key={m.id} />
+      ))}
+
     </div>
   )
 }
