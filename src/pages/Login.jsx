@@ -8,6 +8,7 @@ const Login = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
+    setErr(false)
     e.preventDefault();
     const email = e.target[0].value;
     const password = e.target[1].value;
@@ -25,9 +26,10 @@ const Login = () => {
         <span className="logo">Simple Chat</span>
         <span className="title">Login</span>
         <form onSubmit={handleSubmit}>
-            <input type="text" placeholder='email'/>
-            <input type="password" placeholder='password'/>
+            <input required type="email" placeholder='email'/>
+            <input required type="password" placeholder='password'/>
             <button>Sign in</button>
+            {err && <div style={{color: 'red', textAlign: 'center', fontSize: '12px'}}>you entered the wrong email or password. <br /> please, try again.</div>}
             <p>You don't have an account? <Link to="/register">Register</Link ></p>
         </form>
       </div >

@@ -4,13 +4,14 @@ import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth, db, storage } from "../firebase";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { doc, setDoc } from "firebase/firestore";
-import { useNavigate, Link, useNavigation } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Register = () => {
   const [err, setErr] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const photoIsMissing = 'https://firebasestorage.googleapis.com/v0/b/chat-1f9db.appspot.com/o/photoIsMissing.jpg?alt=media&token=19bf37e3-1853-49a1-93a7-ade2e9f9413d';
   const handleSubmit = async (e) => {
     setLoading(true);
     e.preventDefault();
@@ -18,7 +19,7 @@ const Register = () => {
     const email = e.target[1].value;
     const password = e.target[2].value;
     const file = e.target[3].files[0];
-
+    console.log(file)
     try {
       //Create user
       const res = await createUserWithEmailAndPassword(auth, email, password);
@@ -27,20 +28,21 @@ const Register = () => {
       const date = new Date().getTime();
       const storageRef = ref(storage, `${displayName + date}`);
 
-      const uploadTask = await uploadBytesResumable(storageRef, file).then(() => {
+      await uploadBytesResumable(storageRef, file).then(() => {
         getDownloadURL(storageRef).then(async (downloadURL) => {
+          console.log(downloadURL)
           try {
             //Update profile
             await updateProfile(res.user, {
               displayName,
-              photoURL: downloadURL,
+              photoURL: file ? downloadURL : photoIsMissing,
             });
             //create user on firestore
             await setDoc(doc(db, "users", res.user.uid), {
               uid: res.user.uid,
               displayName,
               email,
-              photoURL: downloadURL,
+              photoURL: file ? downloadURL : photoIsMissing,
             });
             //create empty user chats on firestore
             await setDoc(doc(db, "userChats", res.user.uid), {});

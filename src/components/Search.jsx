@@ -37,7 +37,6 @@ const Search = () => {
 
   const handleChange = e => {
     setEditSearch(!!e.target.value)
-    console.log(editSearch)
     setUsername(e.target.value)
   }
 

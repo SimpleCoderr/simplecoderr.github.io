@@ -21,6 +21,7 @@ const Input = () => {
   const { currentUser } = useContext(AuthContext);
   const { data } = useContext(ChatContext);
 
+  const isEmptyMessage = !(text.trim())
 
   const handleSend = async () => {
     const textMessage = text
@@ -101,9 +102,9 @@ const Input = () => {
           <img src={Img} alt="" />
         </label>
         <button
-          className={`${!!text && 'available'}`}
+          className={`${!isEmptyMessage && 'available'}`}
           onClick={handleSend}
-          disabled={!text}
+          disabled={isEmptyMessage}
         >
           Send
         </button>
